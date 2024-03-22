@@ -1,0 +1,7 @@
+.home {
+  border: 5px solid black;
+  border-radius: 8px;
+  border-width: 5px;
+  margin: 10px 10px 0px 10px;
+  height: calc(100vh - 100px);
+}
