@@ -33,7 +33,7 @@
 
 .modalContainer label span {
   display: block;
-  margin: 30px 0 10px;
+  margin: 20px 0 10px;
 }
 
 .modalContainer .positionContainer {
@@ -65,4 +65,40 @@
   text-decoration: none;
   margin-top: 30px;
   margin-bottom: 20px;
+}
+
+.modalContainer .selectedNodesContainer {
+  display: block;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.modalContainer .selectedNodes {
+  display: inline-flex;
+  flex-direction: row;
+  background-color: #797679;
+  height: 30px;
+  justify-content: center;
+  align-items: center;
+  width: 30%;
+  margin-right: 5%;
+  margin-top: 15px;
+  border: 5px solid black;
+  border-radius: 10px;
+  border-width: 5px;
+}
+
+.modalContainer .selectedNodesText {
+  margin: 0;
+  padding: 0;
+  display: inline-block;
+  width: 70%;
+  text-align: center;
+}
+
+.modalContainer .selectedNodesRemove {
+  margin: 0;
+  padding: 0;
+
+  display: inline-block;
 }

@@ -1,11 +1,13 @@
 import { Link } from "react-router-dom";
-import React, { useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import AddOrEditModal from "../addOrEditModal/addOrEditModal";
-
+import { useReduxDispatch } from "../../store";
 // styles
 import "./navigationBar.css";
+import { AppActions } from "../../redux/app.slice";
 
 function Navbar() {
+  const dispatch = useReduxDispatch();
   const [openModal, setOpenModal] = useState(false);
 
   const onCloseModal = useCallback(() => {
@@ -16,6 +18,22 @@ function Navbar() {
     event.preventDefault();
     setOpenModal(true);
   }, []);
+
+  const onEditClick = useCallback(
+    (event: { preventDefault: () => void }) => {
+      event.preventDefault();
+      dispatch(AppActions.setIsEditModeOn(true));
+    },
+    [dispatch]
+  );
+
+  const onDeleteClick = useCallback(
+    (event: { preventDefault: () => void }) => {
+      event.preventDefault();
+      dispatch(AppActions.setIsDeleteModeOn(true));
+    },
+    [dispatch]
+  );
 
   return (
     <>
@@ -28,10 +46,10 @@ function Navbar() {
           <Link to="/" className="item" onClick={onAddClick}>
             Add Node
           </Link>
-          <Link to="/" className="item">
+          <Link to="/" className="item" onClick={onEditClick}>
             Edit Node
           </Link>
-          <Link to="/" className="item">
+          <Link to="/" className="item" onClick={onDeleteClick}>
             Delete Node
           </Link>
         </nav>
