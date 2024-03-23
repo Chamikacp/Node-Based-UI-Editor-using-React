@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useCallback, useState } from "react";
+import React, { useCallback, useState } from "react";
 import AddOrEditModal from "../addOrEditModal/addOrEditModal";
 
 // styles
@@ -12,7 +12,7 @@ function Navbar() {
     setOpenModal(false);
   }, []);
 
-  const onAddClick = useCallback((event) => {
+  const onAddClick = useCallback((event: { preventDefault: () => void }) => {
     event.preventDefault();
     setOpenModal(true);
   }, []);

@@ -1,3 +1,5 @@
+import React from "react";
+
 // styles
 import "./home.css";
 

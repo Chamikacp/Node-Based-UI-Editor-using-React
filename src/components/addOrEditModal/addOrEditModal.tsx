@@ -1,10 +1,16 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { HexColorPicker } from "react-colorful";
 
 // styles
 import "./addOrEditModal.css";
 
-function AddOrEditModal({ open, onClose }) {
+function AddOrEditModal({
+  open,
+  onClose,
+}: Readonly<{
+  open: boolean;
+  onClose: () => void;
+}>) {
   const [color, setColor] = useState("#b32aa9");
   const [selectedNode, setSelectedNode] = useState();
 
