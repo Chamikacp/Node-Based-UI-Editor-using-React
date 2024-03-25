@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { DraggableData, Rnd } from "react-rnd";
 import { useReduxDispatch, useReduxSelector } from "../../store";
 import {
@@ -24,7 +24,7 @@ const GraphView: React.FC = () => {
   const isAddLinkMode = useReduxSelector(getAddLinkMode);
   const [isFirstNodeSelected, setIsFirstNodeSelected] = useState(false);
   const [firstNode, setFirstNode] = useState<Vertex>();
-  const [isLinkAdded, setIsLinkAdded] = useState(false);
+  const isLinkAdded = useRef<boolean>(false);
 
   const handleEdit = useCallback(
     (selectedNode: Vertex) => {
@@ -43,10 +43,10 @@ const GraphView: React.FC = () => {
         let vertices = graph.map((vertex) => {
           if (vertex.id === firstNode?.id) {
             if (vertex.edges.some((item) => item === selectedNode.id)) {
-              setIsLinkAdded(false);
+              isLinkAdded.current = false;
               alert(i18n.home.graphView.linkAlreadyExist);
             } else {
-              setIsLinkAdded(true);
+              isLinkAdded.current = true;
               return {
                 ...vertex,
                 edges: [...vertex.edges, selectedNode.id],
@@ -56,7 +56,7 @@ const GraphView: React.FC = () => {
           return vertex;
         });
         dispatch(AppActions.setGraph(vertices));
-        if (isLinkAdded) {
+        if (isLinkAdded.current) {
           setLocalStorage(vertices);
           dispatch(AppActions.setIsAddLinkModeOn(false));
         }
@@ -105,8 +105,8 @@ const GraphView: React.FC = () => {
     ]
   );
 
-  const onDragStop = useCallback(
-    (data: DraggableData, id: number) => {
+  const onDragging = useCallback(
+    (data: DraggableData, id: number, onDrag: boolean) => {
       let vertices = graph.map((item) => {
         if (item.id === id) {
           return {
@@ -117,7 +117,9 @@ const GraphView: React.FC = () => {
         return item;
       });
       dispatch(AppActions.setGraph(vertices));
-      setLocalStorage(vertices);
+      if (!onDrag) {
+        setLocalStorage(vertices);
+      }
     },
     [dispatch, graph]
   );
@@ -138,7 +140,8 @@ const GraphView: React.FC = () => {
             }}
             bounds="parent"
             enableResizing={false}
-            onDragStop={(e, data) => onDragStop(data, vertex.id)}
+            onDrag={(e, data) => onDragging(data, vertex.id, true)}
+            onDragStop={(e, data) => onDragging(data, vertex.id, false)}
           >
             <div
               className="nodeItemTextContainer"
