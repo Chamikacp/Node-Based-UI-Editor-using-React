@@ -14,7 +14,7 @@ export default {
       nameAlreadyExist: "Node name already exists!",
     },
     graphView: {
-      linkAlreadyExist: "Link already exists!",
+      linkAlreadyExist: "Link already exists! Please select another node",
       selectDifferentNode: "Please select a different node",
       deleteAlertTitle: "Do you want to delete this node?",
     },
