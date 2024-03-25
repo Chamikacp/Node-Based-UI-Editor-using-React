@@ -43,6 +43,9 @@ const Navbar: React.FC = () => {
   const onAddLink = useCallback(
     (event: { preventDefault: () => void }) => {
       event.preventDefault();
+      dispatch(AppActions.setIsFirstNodeSelected(false));
+      dispatch(AppActions.setFirstNode(undefined));
+
       dispatch(AppActions.setIsDeleteModeOn(false));
       dispatch(AppActions.setIsEditModeOn(false));
       dispatch(AppActions.setIsAddLinkModeOn(true));
@@ -71,7 +74,7 @@ const Navbar: React.FC = () => {
             <h1>{i18n.home.navigationBar.title}</h1>
           </Link>
           <Link to="/" className="item" onClick={onAddClick}>
-            {i18n.home.navigationBar.addLink}
+            {i18n.home.navigationBar.addNode}
           </Link>
           <Link to="/" className="item" onClick={onEditClick}>
             {i18n.home.navigationBar.editNode}

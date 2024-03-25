@@ -6,10 +6,12 @@ type Props = {
   y1: number;
   x2: number;
   y2: number;
+  width: number;
+  height: number;
 };
 
 const Arrow: React.FC<Props> = (props) => {
-  const { x1, y1, x2, y2 } = props;
+  const { x1, y1, x2, y2, width, height } = props;
   const markerId = "arrow-head";
 
   return (
@@ -27,10 +29,10 @@ const Arrow: React.FC<Props> = (props) => {
         </marker>
       </defs>
       <line
-        x1={x1}
-        y1={y1}
-        x2={x2}
-        y2={y2}
+        x1={x1 < x2 ? x1 + width / 2 : x1}
+        y1={y1 < y2 ? y1 + height / 2 : y1}
+        x2={x2 < x1 ? x2 + width : x2}
+        y2={y2 < y1 ? y2 + height : y2}
         stroke="black"
         strokeWidth="2"
         markerEnd={`url(#${markerId})`}

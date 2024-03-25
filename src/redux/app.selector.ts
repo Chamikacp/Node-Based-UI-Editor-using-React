@@ -14,3 +14,8 @@ export const getAddModalStatus = (state: RootState) =>
 export const getGraph = (state: RootState) => state.general.app.graph;
 
 export const getVertex = (state: RootState) => state.general.app.vertex;
+
+export const getFirstNodeSelectedStatus = (state: RootState) =>
+  state.general.app.isFirstNodeSelected;
+
+export const getFirstNode = (state: RootState) => state.general.app.firstNode;

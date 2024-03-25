@@ -1,10 +1,12 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import { DraggableData, Rnd } from "react-rnd";
 import { useReduxDispatch, useReduxSelector } from "../../store";
 import {
   getAddLinkMode,
   getDeleteMode,
   getEditMode,
+  getFirstNode,
+  getFirstNodeSelectedStatus,
   getGraph,
 } from "../../redux/app.selector";
 import { Vertex } from "../../constants/types/general.types";
@@ -22,9 +24,14 @@ const GraphView: React.FC = () => {
   const isDeleteMode = useReduxSelector(getDeleteMode);
   const isEditMode = useReduxSelector(getEditMode);
   const isAddLinkMode = useReduxSelector(getAddLinkMode);
-  const [isFirstNodeSelected, setIsFirstNodeSelected] = useState(false);
-  const [firstNode, setFirstNode] = useState<Vertex>();
+  const isFirstNodeSelected = useReduxSelector(getFirstNodeSelectedStatus);
+  const firstNode = useReduxSelector(getFirstNode);
   const isLinkAdded = useRef<boolean>(false);
+
+  const isDragDisabled = useMemo(
+    () => isEditMode || isAddLinkMode || isDeleteMode,
+    [isAddLinkMode, isDeleteMode, isEditMode]
+  );
 
   const handleEdit = useCallback(
     (selectedNode: Vertex) => {
@@ -37,8 +44,8 @@ const GraphView: React.FC = () => {
   const handleAddLink = useCallback(
     (selectedNode: Vertex) => {
       if (!isFirstNodeSelected) {
-        setIsFirstNodeSelected(true);
-        setFirstNode(selectedNode);
+        dispatch(AppActions.setIsFirstNodeSelected(true));
+        dispatch(AppActions.setFirstNode(selectedNode));
       } else if (firstNode?.id !== selectedNode.id) {
         let vertices = graph.map((vertex) => {
           if (vertex.id === firstNode?.id) {
@@ -142,6 +149,7 @@ const GraphView: React.FC = () => {
             enableResizing={false}
             onDrag={(e, data) => onDragging(data, vertex.id, true)}
             onDragStop={(e, data) => onDragging(data, vertex.id, false)}
+            disableDragging={isDragDisabled}
           >
             <div
               className="nodeItemTextContainer"
@@ -157,6 +165,8 @@ const GraphView: React.FC = () => {
               y1={vertex.position.y}
               x2={graph.find((item) => item.id === edge)?.position.x ?? 0}
               y2={graph.find((item) => item.id === edge)?.position.y ?? 0}
+              width={100}
+              height={50}
             />
           ))}
         </>

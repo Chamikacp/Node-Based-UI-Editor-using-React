@@ -8,6 +8,8 @@ export interface AppState {
   isAddModalOpen: boolean;
   graph: Vertex[];
   vertex?: Vertex;
+  isFirstNodeSelected: boolean;
+  firstNode?: Vertex;
 }
 
 const initialState: AppState = {
@@ -17,6 +19,8 @@ const initialState: AppState = {
   isAddModalOpen: false,
   graph: [],
   vertex: undefined,
+  isFirstNodeSelected: false,
+  firstNode: undefined,
 };
 
 const AppSlice = createSlice({
@@ -40,6 +44,12 @@ const AppSlice = createSlice({
     },
     setVertex: (state, action: PayloadAction<Vertex>) => {
       state.vertex = action.payload;
+    },
+    setIsFirstNodeSelected: (state, action: PayloadAction<boolean>) => {
+      state.isFirstNodeSelected = action.payload;
+    },
+    setFirstNode: (state, action: PayloadAction<Vertex | undefined>) => {
+      state.firstNode = action.payload;
     },
   },
 });
