@@ -4,7 +4,7 @@ import { useReduxDispatch, useReduxSelector } from "../../store";
 import { getEditMode, getGraph, getVertex } from "../../redux/app.selector";
 import { setLocalStorage } from "../../utils/localStorage.util";
 import { AppActions } from "../../redux/app.slice";
-import { Vertex } from "../../constants/types/general";
+import { Vertex } from "../../constants/types/general.types";
 import i18n from "../../i18n";
 
 // styles

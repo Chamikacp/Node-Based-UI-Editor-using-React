@@ -7,7 +7,7 @@ import {
   getEditMode,
   getGraph,
 } from "../../redux/app.selector";
-import { Vertex } from "../../constants/types/general";
+import { Vertex } from "../../constants/types/general.types";
 import { setLocalStorage } from "../../utils/localStorage.util";
 import { AppActions } from "../../redux/app.slice";
 import Arrow from "../arrow/arrow";

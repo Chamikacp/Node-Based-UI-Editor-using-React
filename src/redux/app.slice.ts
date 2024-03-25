@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Vertex } from "../constants/types/general";
+import { Vertex } from "../constants/types/general.types";
 
 export interface AppState {
   isEditModeOn: boolean;
