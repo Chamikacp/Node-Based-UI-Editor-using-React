@@ -54,40 +54,49 @@ const AddOrEditModal: React.FC<Props> = (props) => {
     }
   }, [editingNode, graph, isEditMode]);
 
+  const handleAdd = useCallback(() => {
+    const newNode = {
+      id,
+      name,
+      position: { x: xPosition, y: yPosition },
+      color,
+      edges: linkedNodes,
+    };
+    return [...graph, newNode];
+  }, [color, graph, id, linkedNodes, name, xPosition, yPosition]);
+
+  const handleEdit = useCallback(() => {
+    dispatch(AppActions.setIsEditModeOn(false));
+    return graph.map((vertex) => {
+      if (vertex.id === id) {
+        return {
+          ...vertex,
+          name,
+          position: { x: xPosition, y: yPosition },
+          color,
+          edges: linkedNodes,
+        };
+      }
+      return vertex;
+    });
+  }, [color, dispatch, graph, id, linkedNodes, name, xPosition, yPosition]);
+
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
-      const newNode = {
-        id,
-        name,
-        position: { x: xPosition, y: yPosition },
-        color,
-        edges: linkedNodes,
-      };
-      let newGraph = graph;
-      if (isEditMode) {
-        newGraph = graphWithoutEditingNode;
-      }
-      if (!newGraph.some((item) => item.name === newNode.name)) {
-        newGraph = [...newGraph, newNode];
+      if (!graphWithoutEditingNode.some((item) => item.name === name)) {
+        let newGraph;
+        if (isEditMode) {
+          newGraph = handleEdit();
+        } else {
+          newGraph = handleAdd();
+        }
         setLocalStorage(newGraph);
-        dispatch(AppActions.setIsEditModeOn(false));
       } else {
         e.preventDefault();
         alert(i18n.home.addOrEdit.nameAlreadyExist);
       }
     },
-    [
-      color,
-      dispatch,
-      graph,
-      graphWithoutEditingNode,
-      id,
-      isEditMode,
-      linkedNodes,
-      name,
-      xPosition,
-      yPosition,
-    ]
+    [graphWithoutEditingNode, handleAdd, handleEdit, isEditMode, name]
   );
 
   useEffect(() => {
