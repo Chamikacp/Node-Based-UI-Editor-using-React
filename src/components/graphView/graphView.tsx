@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useCallback, useMemo, useRef } from "react";
 import { DraggableData, Rnd } from "react-rnd";
 import { useReduxDispatch, useReduxSelector } from "../../store";
 import {
@@ -139,6 +139,8 @@ const GraphView: React.FC = () => {
             className="rnd-custom"
             key={vertex.id}
             style={{ backgroundColor: vertex.color }}
+            maxHeight={100}
+            minHeight={50}
             default={{
               x: vertex.position.x,
               y: vertex.position.y,
