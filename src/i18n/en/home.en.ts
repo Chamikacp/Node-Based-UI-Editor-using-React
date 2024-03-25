@@ -3,7 +3,7 @@ export default {
   home: {
     addOrEdit: {
       title: "Add Node",
-      name: "Node name",
+      name: 'Node name ("Node 1")',
       positionX: "Position (x)",
       positionY: "Position (y)",
       backgroundColor: "Node background color : ",
