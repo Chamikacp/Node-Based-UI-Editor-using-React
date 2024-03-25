@@ -91,12 +91,13 @@ const AddOrEditModal: React.FC<Props> = (props) => {
           newGraph = handleAdd();
         }
         setLocalStorage(newGraph);
+        dispatch(AppActions.setIsAddModalOpen(false));
       } else {
         e.preventDefault();
         alert(i18n.home.addOrEdit.nameAlreadyExist);
       }
     },
-    [graphWithoutEditingNode, handleAdd, handleEdit, isEditMode, name]
+    [dispatch, graphWithoutEditingNode, handleAdd, handleEdit, isEditMode, name]
   );
 
   useEffect(() => {
