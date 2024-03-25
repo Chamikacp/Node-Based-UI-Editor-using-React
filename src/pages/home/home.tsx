@@ -1,23 +1,32 @@
 import { useEffect } from "react";
 import { useReduxDispatch } from "../../store";
+import { AppActions } from "../../redux/app.slice";
+import GraphView from "../../components/graphView/graphView";
+import {
+  getLocalStorage,
+  setLocalStorage,
+} from "../../utils/localStorage.util";
 
 // styles
 import "./home.css";
-import { AppActions } from "../../redux/app.slice";
 
-function Home() {
+const Home: React.FC = () => {
   const dispatch = useReduxDispatch();
 
   useEffect(() => {
-    const items = localStorage.getItem("graph");
+    const items = getLocalStorage();
     if (items) {
       dispatch(AppActions.setGraph(JSON.parse(items)));
     } else {
-      localStorage.setItem("graph", JSON.stringify([]));
+      setLocalStorage([]);
     }
   }, [dispatch]);
 
-  return <div className="home"></div>;
-}
+  return (
+    <div className="home">
+      <GraphView />
+    </div>
+  );
+};
 
 export default Home;

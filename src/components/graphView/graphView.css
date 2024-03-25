@@ -1,0 +1,15 @@
+.rnd-custom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.nodeItemTextContainer {
+  height: 100%;
+  width: 100%;
+  padding: 20px;
+  color: #fff;
+  font-weight: bolder;
+}

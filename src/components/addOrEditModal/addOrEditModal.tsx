@@ -1,32 +1,58 @@
 import { useCallback, useEffect, useState } from "react";
 import { HexColorPicker } from "react-colorful";
+import { useReduxDispatch, useReduxSelector } from "../../store";
+import { getEditMode, getGraph, getVertex } from "../../redux/app.selector";
+import { setLocalStorage } from "../../utils/localStorage.util";
+import { AppActions } from "../../redux/app.slice";
+import { Vertex } from "../../constants/types/general";
+import i18n from "../../i18n";
 
 // styles
 import "./addOrEditModal.css";
-import { useReduxSelector } from "../../store";
-import { getGraph } from "../../redux/app.selector";
-import { Vertex } from "../../constants/types/types";
 
-function AddOrEditModal({
-  open,
-  onClose,
-}: Readonly<{
+type Props = {
   open: boolean;
   onClose: () => void;
-}>) {
+};
+
+const AddOrEditModal: React.FC<Props> = (props) => {
+  const { open, onClose } = props;
+  const dispatch = useReduxDispatch();
   const graph = useReduxSelector(getGraph);
+  const editingNode = useReduxSelector(getVertex);
+  const isEditMode = useReduxSelector(getEditMode);
   const [id, setId] = useState(0);
   const [name, setName] = useState("");
   const [xPosition, setXPosition] = useState(0);
   const [yPosition, setYPosition] = useState(0);
   const [color, setColor] = useState("#b32aa9");
-  const [selectedNode, setSelectedNode] = useState("");
-  const [linkedNodes, setLinkedNodes] = useState<Vertex[]>([]);
+  const [selectedNode, setSelectedNode] = useState(0);
+  const [linkedNodes, setLinkedNodes] = useState<number[]>([]);
+  const [graphWithoutEditingNode, setGraphWithoutEditingNode] = useState<
+    Vertex[]
+  >([]);
 
   useEffect(() => {
-    setId(graph.length + 1);
-    console.log(JSON.stringify(graph));
-  }, [graph, graph.length, selectedNode]);
+    if (isEditMode && editingNode) {
+      setId(editingNode.id);
+      setName(editingNode.name);
+      setXPosition(editingNode.position.x);
+      setYPosition(editingNode.position.y);
+      setColor(editingNode.color);
+      setLinkedNodes(editingNode.edges);
+      setGraphWithoutEditingNode(
+        graph.filter((item) => item.id !== editingNode.id)
+      );
+    } else {
+      setId(Date.now());
+      setName("");
+      setXPosition(0);
+      setYPosition(0);
+      setColor("#b32aa9");
+      setLinkedNodes([]);
+      setGraphWithoutEditingNode(graph);
+    }
+  }, [editingNode, graph, isEditMode]);
 
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
@@ -37,22 +63,43 @@ function AddOrEditModal({
         color,
         edges: linkedNodes,
       };
-      if (!graph.some((item) => item.name === newNode.name)) {
-        const newGraph = [...graph, newNode];
-        localStorage.setItem("graph", JSON.stringify(newGraph));
+      let newGraph = graph;
+      if (isEditMode) {
+        newGraph = graphWithoutEditingNode;
+      }
+      if (!newGraph.some((item) => item.name === newNode.name)) {
+        newGraph = [...newGraph, newNode];
+        setLocalStorage(newGraph);
+        dispatch(AppActions.setIsEditModeOn(false));
+      } else {
+        e.preventDefault();
+        alert(i18n.home.addOrEdit.nameAlreadyExist);
       }
     },
-    [color, graph, id, linkedNodes, name, xPosition, yPosition]
+    [
+      color,
+      dispatch,
+      graph,
+      graphWithoutEditingNode,
+      id,
+      isEditMode,
+      linkedNodes,
+      name,
+      xPosition,
+      yPosition,
+    ]
   );
 
   useEffect(() => {
-    const node = graph.find((item) => item.name === selectedNode);
-    if (node && !linkedNodes.some((item) => item.name === selectedNode)) {
-      const list = [...linkedNodes, node];
+    if (
+      selectedNode !== 0 &&
+      !linkedNodes.some((item) => item === selectedNode)
+    ) {
+      const list = [...linkedNodes, selectedNode];
       setLinkedNodes(list);
     }
-    setSelectedNode("");
-  }, [graph, linkedNodes, selectedNode]);
+    setSelectedNode(0);
+  }, [linkedNodes, selectedNode]);
 
   const onRemoveLink = useCallback(
     (indexToRemove: number) => {
@@ -74,10 +121,10 @@ function AddOrEditModal({
         </p>
 
         <form onSubmit={handleSubmit}>
-          <h2 className="page-title">Add Node</h2>
+          <h2 className="page-title">{i18n.home.addOrEdit.title}</h2>
 
           <label>
-            <span>Node name</span>
+            <span>{i18n.home.addOrEdit.name}</span>
             <input
               type="text"
               onChange={(e) => setName(e.target.value)}
@@ -88,7 +135,7 @@ function AddOrEditModal({
 
           <div className="positionContainer">
             <label className="xContainer">
-              <span>Position (x)</span>
+              <span>{i18n.home.addOrEdit.positionX}</span>
               <input
                 type="text"
                 onChange={(e) => setXPosition(Number(e.target.value))}
@@ -97,7 +144,7 @@ function AddOrEditModal({
               />
             </label>
             <label>
-              <span>Position (y)</span>
+              <span>{i18n.home.addOrEdit.positionY}</span>
               <input
                 type="text"
                 onChange={(e) => setYPosition(Number(e.target.value))}
@@ -108,23 +155,26 @@ function AddOrEditModal({
           </div>
 
           <label>
-            <span>Node background color: {color}</span>
+            <span>
+              {i18n.home.addOrEdit.backgroundColor}
+              {color}
+            </span>
             <HexColorPicker color={color} onChange={setColor} />
           </label>
 
           <label>
-            <span>Select linked nodes</span>
+            <span>{i18n.home.addOrEdit.selectNodeTitle}</span>
             <select
               value={selectedNode}
-              onChange={(e) => setSelectedNode(e.target.value)}
+              onChange={(e) => setSelectedNode(Number(e.target.value))}
             >
-              {graph.length > 0 ? (
-                <option>Select a node</option>
+              {graphWithoutEditingNode.length > 0 ? (
+                <option>{i18n.home.addOrEdit.selectNode}</option>
               ) : (
-                <option>No nodes to select</option>
+                <option>{i18n.home.addOrEdit.noNodes}</option>
               )}
-              {graph.map((item) => (
-                <option value={item.name} selected key={item.id}>
+              {graphWithoutEditingNode.map((item) => (
+                <option value={item.id} key={item.id}>
                   {item.name}
                 </option>
               ))}
@@ -132,9 +182,11 @@ function AddOrEditModal({
           </label>
 
           <div className="selectedNodesContainer">
-            {linkedNodes.map((item, index) => (
-              <div className="selectedNodes" key={item.id}>
-                <p className="selectedNodesText">{item.name}</p>
+            {linkedNodes.map((id, index) => (
+              <div className="selectedNodes" key={id}>
+                <p className="selectedNodesText">
+                  {graph.find((item) => item.id === id)?.name}
+                </p>
                 <p
                   className="selectedNodesRemove"
                   onClick={() => onRemoveLink(index)}
@@ -146,12 +198,12 @@ function AddOrEditModal({
           </div>
 
           <div className="btnContainer">
-            <button className="btn">Save</button>
+            <button className="btn">{i18n.home.addOrEdit.saveButton}</button>
           </div>
         </form>
       </div>
     </div>
   );
-}
+};
 
 export default AddOrEditModal;

@@ -8,5 +8,5 @@ export interface Vertex {
   name: string;
   position: Position;
   color: string;
-  edges: Vertex[];
+  edges: number[];
 }
